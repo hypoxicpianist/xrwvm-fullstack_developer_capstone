@@ -7,20 +7,20 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import logout
 from django.contrib import messages
 from datetime import datetime
+from .models import CarMake, CarModel
 
 from django.http import JsonResponse
 from django.contrib.auth import login, authenticate
 import logging
 import json
 from django.views.decorators.csrf import csrf_exempt
-# from .populate import initiate
+from .populate import initiate
+import sys
+print(sys.path)
 
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
-
-
-# Create your views here.
 
 # Create a `login_request` view to handle sign in request
 @csrf_exempt
@@ -76,6 +76,21 @@ def registration(request):
     else :
         data = {"userName":username,"error":"Already Registered"}
         return JsonResponse(data)
+
+def get_cars(request):
+    count = CarMake.objects.filter().count()
+    print(f"CarMake count before initiate: {count}")  # Debug log
+    if count == 0:
+        initiate()
+        print("Initiate function called")  # Debug log
+    
+    car_models = CarModel.objects.select_related('car_make')
+    print(f"CarModel count: {car_models.count()}")  # Debug log
+
+    cars = [{"CarModel": cm.name, "CarMake": cm.car_make.name} for cm in car_models]
+    print(f"Cars data: {cars}")  # Debug log
+    return JsonResponse({"CarModels": cars})
+
 
 # # Update the `get_dealerships` view to render the index page with
 # a list of dealerships
