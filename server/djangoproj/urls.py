@@ -18,6 +18,9 @@ from django.urls import path, include
 from django.views.generic import TemplateView
 from django.conf.urls.static import static
 from django.conf import settings
+from django.views.static import serve
+from django.urls import re_path
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,4 +28,7 @@ urlpatterns = [
     path('', TemplateView.as_view(template_name="Home.html")),
     path('about/', TemplateView.as_view(template_name="About.html")),
     path('contact/', TemplateView.as_view(template_name="Contact.html")),
+    path('login/', TemplateView.as_view(template_name="index.html")),
+    path('register/', TemplateView.as_view(template_name="index.html")),
+    re_path(r'^manifest\.json$', serve, {'document_root': settings.STATICFILES_DIRS[0], 'path': 'manifest.json'}),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
